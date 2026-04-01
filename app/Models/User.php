@@ -5,13 +5,16 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,8 +22,9 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
         'email',
+        'phone',
+        'display_name',
         'password',
     ];
 
@@ -45,5 +49,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function childProfiles(): HasMany
+    {
+        return $this->hasMany(ChildProfile::class);
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function entitlements(): HasMany
+    {
+        return $this->hasMany(Entitlement::class);
+    }
+
+    public function refreshTokens(): HasMany
+    {
+        return $this->hasMany(RefreshToken::class);
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(Device::class);
     }
 }
